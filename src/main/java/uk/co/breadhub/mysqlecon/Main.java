@@ -36,14 +36,18 @@ public final class Main extends JavaPlugin {
         //Register Commands
         getCommand("bank").setExecutor(new CommandListener());
 
-        // register Database
-        database.connect();
-        database.init();
+        if (!getConfig().getString("Database.Username").equals("testacc")) {
+            // register Database
+            database.connect();
+            database.init();
+        } else {
+            log.info("Plugin Disabled Cannot have account named testacc");
+            onDisable();
+        }
     }
 
     @Override
     public void onDisable() {
-        // Purge temporary Cache
         database.disconnect();
     }
 
