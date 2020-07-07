@@ -5,7 +5,7 @@ import uk.co.breadhub.mysqlecon.Main;
 import java.sql.*;
 import java.util.UUID;
 
-public class DatabaseImpl implements DatabaseApi {
+public class DatabaseImpl {
 
     private static final String host = Main.getInstance().getConfig().getString("Database.Hostname");
     private static final String port = Main.getInstance().getConfig().getString("Database.Port");
@@ -113,10 +113,12 @@ public class DatabaseImpl implements DatabaseApi {
      * @param amount
      */
     public void userDeposit(UUID uniqueId, int amount) {
+        int ammount_ = userBalance(uniqueId) + amount;
         try {
-            PreparedStatement ps = getConnection().prepareStatement("INSERT IGNORE INTO `Global_banktable` (`UUID`, `balance`) VALUES (?,?);");
+            PreparedStatement ps = getConnection().prepareStatement("INSERT IGNORE INTO `Global_banktable` (`UUID`, `balance`) VALUES (?,?) on duplicate key update `balance` = ?;");
             ps.setString(1, uniqueId.toString());
-            ps.setInt(2, userBalance(uniqueId) + amount);
+            ps.setInt(2, ammount_);
+            ps.setInt(3, ammount_);
             ps.executeUpdate();
         } catch(Exception e) {
             e.printStackTrace();
@@ -129,10 +131,12 @@ public class DatabaseImpl implements DatabaseApi {
      * @param amount
      */
     public void userWithdraw(UUID uniqueId, int amount) {
+        int ammount_ = userBalance(uniqueId) - amount;
         try {
-            PreparedStatement ps = getConnection().prepareStatement("INSERT IGNORE INTO `Global_banktable` (`UUID`, `balance`) VALUES (?,?);");
+            PreparedStatement ps = getConnection().prepareStatement("INSERT IGNORE INTO `Global_banktable` (`UUID`, `balance`) VALUES (?,?) on duplicate key update `balance` = ?;");
             ps.setString(1, uniqueId.toString());
-            ps.setInt(2, userBalance(uniqueId) - amount);
+            ps.setInt(2, ammount_);
+            ps.setInt(3, ammount_);
             ps.executeUpdate();
         } catch(Exception e) {
             e.printStackTrace();
@@ -145,10 +149,12 @@ public class DatabaseImpl implements DatabaseApi {
      * @param amount
      */
     public void adminDeposit(UUID uniqueId, int amount) {
+        int ammount_ = userBalance(uniqueId) + amount;
         try {
-            PreparedStatement ps = getConnection().prepareStatement("INSERT IGNORE INTO `Global_banktable` (`UUID`, `balance`) VALUES (?,?);");
+            PreparedStatement ps = getConnection().prepareStatement("INSERT IGNORE INTO `Global_banktable` (`UUID`, `balance`) VALUES (?,?) on duplicate key update `balance` = ?;");
             ps.setString(1, uniqueId.toString());
-            ps.setInt(2, userBalance(uniqueId) + amount);
+            ps.setInt(2, ammount_);
+            ps.setInt(3, ammount_);
             ps.executeUpdate();
         } catch(Exception e) {
             e.printStackTrace();
@@ -161,10 +167,12 @@ public class DatabaseImpl implements DatabaseApi {
      * @param amount
      */
     public void adminWithdraw(UUID uniqueId, int amount) {
+        int ammount_ = userBalance(uniqueId) - amount;
         try {
-            PreparedStatement ps = getConnection().prepareStatement("INSERT IGNORE INTO `Global_banktable` (`UUID`, `balance`) VALUES (?,?);");
+            PreparedStatement ps = getConnection().prepareStatement("INSERT IGNORE INTO `Global_banktable` (`UUID`, `balance`) VALUES (?,?) on duplicate key update `balance` = ?;");
             ps.setString(1, uniqueId.toString());
-            ps.setInt(2, userBalance(uniqueId) - amount);
+            ps.setInt(2, ammount_);
+            ps.setInt(3, ammount_);
             ps.executeUpdate();
         } catch(Exception e) {
             e.printStackTrace();
