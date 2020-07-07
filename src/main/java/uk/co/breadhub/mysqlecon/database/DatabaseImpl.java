@@ -14,7 +14,9 @@ public class DatabaseImpl implements DatabaseApi {
     private static final String password = Main.getInstance().getConfig().getString("Database.Password");
     private static Connection con;
 
-    @Override
+    /**
+     * Connects to Database
+     */
     public void connect() {
         String UrlString = "jdbc:mysql://" + host + ":" + port + "/" + database + "";
         try {
@@ -30,7 +32,9 @@ public class DatabaseImpl implements DatabaseApi {
         }
     }
 
-    @Override
+    /**
+     * Disconnects from the Database
+     */
     public void disconnect(){
         try {
             getConnection().close();
@@ -39,6 +43,10 @@ public class DatabaseImpl implements DatabaseApi {
         }
     }
 
+    /**
+     * Gets Database Connection
+     * @return
+     */
     public Connection getConnection() {
         try {
             if(con == null || con.isClosed()) {
@@ -50,9 +58,11 @@ public class DatabaseImpl implements DatabaseApi {
         return con;
     }
 
-    @Override
+    /**
+     * Initialises the Database
+     */
     public void init() {
-        String sql = "CREATE TABLE IF NOT EXISTS `" + database + "`.`Global_banktable` ( " + "`UUID` VARCHAR(64) NOT NULL , " + "`balance` int(42) NOT NULL , " + "PRIMARY KEY (`UUID`)) " + "ENGINE = InnoDB;";
+        String sql = "CREATE TABLE IF NOT EXISTS `" + database + "`.`Global_banktable` ( " + "`UUID` VARCHAR(64) NOT NULL , " + "`balance` int(42) NOT NULL , UNIQUE(`UUID`), " + "PRIMARY KEY (`UUID`)) " + "ENGINE = InnoDB;";
         try {
             Statement stmt = getConnection().createStatement();
             stmt.executeUpdate(sql);
@@ -61,7 +71,11 @@ public class DatabaseImpl implements DatabaseApi {
         }
     }
 
-    @Override
+    /**
+     * Gets the User Balance
+     * @param uniqueId
+     * @return
+     */
     public int userBalance(UUID uniqueId) {
         int balance = 0;
         try {
@@ -77,28 +91,83 @@ public class DatabaseImpl implements DatabaseApi {
         return balance;
     }
 
-    @Override
+    /**
+     * Administrator Setting user Balance Function
+     * @param uniqueId
+     * @param amount
+     */
     public void adminSet(UUID uniqueId, int amount) {
-
+        try {
+            PreparedStatement ps = getConnection().prepareStatement("INSERT IGNORE INTO `Global_banktable` (`UUID`, `balance`) VALUES (?,?);");
+            ps.setString(1, uniqueId.toString());
+            ps.setInt(2, amount);
+            ps.executeUpdate();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    @Override
+    /**
+     * Deposit into Database as the command Sender
+     * @param uniqueId
+     * @param amount
+     */
     public void userDeposit(UUID uniqueId, int amount) {
-
+        try {
+            PreparedStatement ps = getConnection().prepareStatement("INSERT IGNORE INTO `Global_banktable` (`UUID`, `balance`) VALUES (?,?);");
+            ps.setString(1, uniqueId.toString());
+            ps.setInt(2, userBalance(uniqueId) + amount);
+            ps.executeUpdate();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    @Override
+    /**
+     * Withdraw from Database as the command Sender into Current servers Econ plugin
+     * @param uniqueId
+     * @param amount
+     */
     public void userWithdraw(UUID uniqueId, int amount) {
-
+        try {
+            PreparedStatement ps = getConnection().prepareStatement("INSERT IGNORE INTO `Global_banktable` (`UUID`, `balance`) VALUES (?,?);");
+            ps.setString(1, uniqueId.toString());
+            ps.setInt(2, userBalance(uniqueId) - amount);
+            ps.executeUpdate();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    @Override
+    /**
+     * Deposit into Database Through Admin Command
+     * @param uniqueId
+     * @param amount
+     */
     public void adminDeposit(UUID uniqueId, int amount) {
-
+        try {
+            PreparedStatement ps = getConnection().prepareStatement("INSERT IGNORE INTO `Global_banktable` (`UUID`, `balance`) VALUES (?,?);");
+            ps.setString(1, uniqueId.toString());
+            ps.setInt(2, userBalance(uniqueId) + amount);
+            ps.executeUpdate();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    @Override
+    /**
+     * Remove from Database Through Admin Command
+     * @param uniqueId
+     * @param amount
+     */
     public void adminWithdraw(UUID uniqueId, int amount) {
-
+        try {
+            PreparedStatement ps = getConnection().prepareStatement("INSERT IGNORE INTO `Global_banktable` (`UUID`, `balance`) VALUES (?,?);");
+            ps.setString(1, uniqueId.toString());
+            ps.setInt(2, userBalance(uniqueId) - amount);
+            ps.executeUpdate();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 }

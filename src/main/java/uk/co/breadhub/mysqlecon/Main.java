@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 public final class Main extends JavaPlugin {
 
     private static final Logger log = Logger.getLogger("Minecraft");
-    private static DatabaseApi database = new DatabaseImpl();
+    private static DatabaseApi database;
     private static Economy econ = null;
     private static Main instance;
     private static Permission perms = null;
@@ -38,6 +38,7 @@ public final class Main extends JavaPlugin {
 
         if (!getConfig().getString("Database.Username").equals("testacc")) {
             // register Database
+            database = new DatabaseImpl();
             database.connect();
             database.init();
         } else {
@@ -48,7 +49,9 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        database.disconnect();
+        if (!getConfig().getString("Database.Username").equals("testacc")) {
+            database.disconnect();
+        }
     }
 
     public static Main getInstance() {
