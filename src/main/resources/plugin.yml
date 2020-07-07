@@ -1,0 +1,12 @@
+name: Mysql-Economy
+version: @version@
+main: uk.co.breadhub.mysqlecon.Main
+prefix: McBankEcon
+depend: [Vault]
+authors: [braddevans]
+description: mysql banking economy with sign support and negative value checking
+website: https://plugins.breadhub.co.uk
+
+commands:
+  Bank:
+    description: simple banking plugin

@@ -1,0 +1,10 @@
+# ============ [Default Config] ===============
+
+Debug: false
+
+Database:
+  Hostname: localhost
+  Port: 3306
+  Database: "Bank"
+  Username: "test"
+  Password: "test123"
